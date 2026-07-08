@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #0f172a;
+  --color-accent: #0369a1;
+  --color-paper: #e5e5e5;
+  --color-card: #ffffff;
+
+  --radius-*: initial; /* Swiss minimalism: no rounded corners anywhere */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Fade-edge hint that a table scrolls horizontally on narrow viewports */
+@media (max-width: 767px) {
+  .scroll-fade {
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  }
+}
+
+/* Technical blueprint grid backdrop */
+.grid-paper {
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
