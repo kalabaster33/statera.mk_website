@@ -745,7 +745,7 @@ function UrbanPlanningTab() {
         </p>
         {result ? (
           <div className="mt-4">
-            <OutputRow k="Макс. фусна површина" v={`${result.footprint.toLocaleString('en-US', { maximumFractionDigits: 1 })} m²`} />
+            <OutputRow k="Макс. застроена површина" v={`${result.footprint.toLocaleString('en-US', { maximumFractionDigits: 1 })} m²`} />
             <OutputRow k="Макс. бруто градена површина" v={`${result.maxGFA.toLocaleString('en-US', { maximumFractionDigits: 1 })} m²`} />
             <OutputRow k="Просечна спратност" v={`${result.avgFloors.toFixed(1)} ката`} />
             {result.greenAreaRequired !== null && (
