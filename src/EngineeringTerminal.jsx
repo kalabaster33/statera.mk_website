@@ -420,6 +420,7 @@ function PredimTab() {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xzdllory'
 
 function MaterialTab() {
   const [area, setArea] = useState('400')
@@ -429,11 +430,28 @@ function MaterialTab() {
   const emailValid = EMAIL_RE.test(email)
   const result = calcMaterialEstimate(parseFloat(area), parseInt(floors, 10), purpose)
 
-  const mailtoHref = `mailto:info@statera.mk?subject=${encodeURIComponent(
-    'Целосна техничка проценка - барање'
-  )}&body=${encodeURIComponent(
-    `Бруто површина: ${area} m2/кат\nКатови: ${floors}\nНамена: ${PURPOSE_FACTORS[purpose].label}\nКонтакт: ${email}`
-  )}`
+  const [submitState, setSubmitState] = useState('idle') // idle | sending | sent | error
+
+  const handleSubmit = async () => {
+    if (!emailValid || submitState === 'sending') return
+    setSubmitState('sending')
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          subject: 'Целосна техничка проценка - барање',
+          'Бруто површина': `${area} m2/кат`,
+          Катови: floors,
+          Намена: PURPOSE_FACTORS[purpose].label,
+        }),
+      })
+      setSubmitState(res.ok ? 'sent' : 'error')
+    } catch {
+      setSubmitState('error')
+    }
+  }
 
   return (
     <div className="grid gap-10 md:grid-cols-2">
@@ -482,32 +500,42 @@ function MaterialTab() {
           <p className="font-heading text-xs font-bold uppercase tracking-[0.15em] text-ink">
             Отклучи целосна техничка проценка
           </p>
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-            <input
-              type="email"
-              placeholder="vasiot@email.mk"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputCls}
-              aria-label="Е-пошта за целосна проценка"
-            />
-            {emailValid ? (
-              <a
-                href={mailtoHref}
-                className="font-heading shrink-0 bg-accent px-5 py-2.5 text-center text-xs font-bold uppercase tracking-[0.12em] text-white hover:bg-ink"
-              >
-                Отклучи
-              </a>
-            ) : (
+          {submitState === 'sent' ? (
+            <p className="mt-3 border border-green-700 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
+              Испратено! Ќе ве контактираме наскоро на {email}.
+            </p>
+          ) : (
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <input
+                type="email"
+                placeholder="vasiot@email.mk"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (submitState === 'error') setSubmitState('idle')
+                }}
+                className={inputCls}
+                aria-label="Е-пошта за целосна проценка"
+              />
               <button
                 type="button"
-                disabled
-                className="font-heading shrink-0 cursor-not-allowed bg-ink/20 px-5 py-2.5 text-center text-xs font-bold uppercase tracking-[0.12em] text-ink/50"
+                onClick={handleSubmit}
+                disabled={!emailValid || submitState === 'sending'}
+                className={`font-heading shrink-0 px-5 py-2.5 text-center text-xs font-bold uppercase tracking-[0.12em] ${
+                  emailValid && submitState !== 'sending'
+                    ? 'bg-accent text-white hover:bg-ink'
+                    : 'cursor-not-allowed bg-ink/20 text-ink/50'
+                }`}
               >
-                Отклучи
+                {submitState === 'sending' ? 'Испраќање...' : 'Отклучи'}
               </button>
-            )}
-          </div>
+            </div>
+          )}
+          {submitState === 'error' && (
+            <p className="mt-2 text-xs font-medium text-red-700">
+              Настана грешка. Обидете се повторно или контактирајте нè директно на info@statera.mk.
+            </p>
+          )}
         </div>
       </div>
     </div>
