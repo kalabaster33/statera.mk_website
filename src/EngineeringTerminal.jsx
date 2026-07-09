@@ -680,7 +680,7 @@ function UrbanPlanningTab() {
         </div>
         <div>
           <label htmlFor="kf" className={labelCls}>
-            Кф — коефициент на изградба (0–1)
+            Kf — коефициент на изградба (0–1)
           </label>
           <input
             id="kf"
@@ -695,7 +695,7 @@ function UrbanPlanningTab() {
         </div>
         <div>
           <label htmlFor="kpi" className={labelCls}>
-            Кпи — коефициент на искористеност
+            Kpi — коефициент на искористеност
           </label>
           <input
             id="kpi"
@@ -757,11 +757,11 @@ function UrbanPlanningTab() {
           </div>
         ) : (
           <p className="mt-4 font-mono text-sm text-ink/50">
-            // Внесете плоштина {'>'}0, Кф помеѓу 0 и 1, и Кпи {'>'}0
+            // Внесете плоштина {'>'}0, Kf помеѓу 0 и 1, и Kpi {'>'}0
           </p>
         )}
         <p className="mt-6 border-t border-ink/15 pt-4 font-mono text-[10px] leading-relaxed text-ink/50">
-          // Кф и Кпи не се вградени во алатката — внесете ги од Вашиот
+          // Kf и Kpi не се вградени во алатката — внесете ги од Вашиот
           <br />
           // важечки Извод од ДУП/ГУП за конкретната парцела. Паркинг
           <br />
