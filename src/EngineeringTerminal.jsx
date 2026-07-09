@@ -189,43 +189,39 @@ function calcUrbanFeasibility(plotArea, kf, kpi, greenPct, parkingRatio) {
   return { footprint, maxGFA, avgFloors, greenAreaRequired, parkingSpaces }
 }
 
-// Tab 3 climate data. TWO independent official sources, tracked separately:
-//
-// sk (snow) — read off the official МКС EN 1991-1-3 snow-load band map for
-//   North Macedonia. This map is banded in 0.5 kN/m² steps (≤0.5 … ≤4.5),
-//   so every sk here is a BAND UPPER BOUND (e.g. the ≤1.5 band → 1.5),
-//   accurate to about ±0.25, and is an approximate visual read at country
-//   zoom — cities near a band boundary or under terrain shading are less
-//   certain. The map caps at ≤4.5, so no value here exceeds 4.5 (an earlier
-//   station-study table had 5.3 / 6.9 for the high peaks — above the design
-//   map's scale — and those were corrected down into the mapped band).
-//   Highest-mountain reads (Попова Шапка, Маврово) are the least certain.
-//
-// vb0 (wind, 50-yr) — EXACT table value for 9 stations (vb0Source:'table');
-//   for the other 11 it's an approximate read off the isotach map by
-//   geographic position (vb0Source:'map'), rendered with a "~" and a
-//   distinct badge. Never invented where no read was possible.
+// Tab 3 climate data — user-supplied reference table for 26 cities/stations
+// across North Macedonia, both snow and wind read with the same banded
+// methodology: sk as a band upper bound (e.g. "< 1.5" -> 1.5 kN/m²), vb0 as
+// a 3 m/s-wide band range (e.g. "24 - 27" m/s) rather than a single point
+// estimate. This replaces the earlier patchwork dataset (20 stations, mixed
+// exact-table/map-estimated wind values) with one consistent source.
 const CLIMATE_DATA = [
-  { city: 'Скопје', sk: 1.0, vb0: 24.3, vb0Source: 'table' },
-  { city: 'Скопје Аеродром', sk: 1.0, vb0: 24, vb0Source: 'map' },
-  { city: 'Битола', sk: 1.5, vb0: 18.7, vb0Source: 'table' },
-  { city: 'Штип', sk: 1.0, vb0: 28.3, vb0Source: 'table' },
-  { city: 'Охрид', sk: 1.5, vb0: 29.3, vb0Source: 'table' },
-  { city: 'Прилеп', sk: 1.5, vb0: 21.3, vb0Source: 'table' },
-  { city: 'Демир Капија', sk: 1.0, vb0: 21, vb0Source: 'map' },
-  { city: 'Гевгелија', sk: 1.0, vb0: 21.6, vb0Source: 'table' },
-  { city: 'Крива Паланка', sk: 1.5, vb0: 20.1, vb0Source: 'table' },
-  { city: 'Струмица', sk: 1.0, vb0: 19, vb0Source: 'map' },
-  { city: 'Берово', sk: 1.0, vb0: 14.7, vb0Source: 'table' },
-  { city: 'Лазарополе', sk: 2.0, vb0: 23.8, vb0Source: 'table' },
-  { city: 'Претор', sk: 1.5, vb0: 20, vb0Source: 'map' },
-  { city: 'Пожар', sk: 2.0, vb0: 25, vb0Source: 'map' },
-  { city: 'Виница', sk: 1.0, vb0: 17, vb0Source: 'map' },
-  { city: 'Тополчани', sk: 1.5, vb0: 21, vb0Source: 'map' },
-  { city: 'Маврово', sk: 2.5, vb0: 26, vb0Source: 'map' },
-  { city: 'Полог', sk: 2.0, vb0: 20, vb0Source: 'map' },
-  { city: 'Попова Шапка', sk: 3.0, vb0: 27, vb0Source: 'map' },
-  { city: 'Ѓуриште', sk: 1.5, vb0: 24, vb0Source: 'map' },
+  { city: 'Скопје', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Битола', sk: 1.5, vMin: 18, vMax: 21 },
+  { city: 'Штип', sk: 1.0, vMin: 27, vMax: 30 },
+  { city: 'Охрид', sk: 1.0, vMin: 27, vMax: 30 },
+  { city: 'Прилеп', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Демир Капија', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Гевгелија', sk: 1.0, vMin: 21, vMax: 24 },
+  { city: 'Крива Паланка', sk: 1.0, vMin: 18, vMax: 21 },
+  { city: 'Струмица', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Берово', sk: 1.0, vMin: 12, vMax: 15 },
+  { city: 'Куманово', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Свети Николе', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Велес', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Радовиш', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Кавадарци', sk: 1.5, vMin: 24, vMax: 27 },
+  { city: 'Неготино', sk: 1.0, vMin: 24, vMax: 27 },
+  { city: 'Делчево', sk: 1.0, vMin: 15, vMax: 18 },
+  { city: 'Струга', sk: 1.0, vMin: 27, vMax: 30 },
+  { city: 'Ресен', sk: 1.5, vMin: 24, vMax: 27 },
+  { city: 'Тетово', sk: 2.0, vMin: 24, vMax: 27 },
+  { city: 'Гостивар', sk: 1.5, vMin: 24, vMax: 27 },
+  { city: 'Кичево', sk: 1.5, vMin: 24, vMax: 27 },
+  { city: 'Дебар', sk: 1.5, vMin: 27, vMax: 30 },
+  { city: 'Крушево', sk: 2.0, vMin: 15, vMax: 18 },
+  { city: 'Попова Шапка', sk: 4.5, vMin: 18, vMax: 21 },
+  { city: 'Маврово', sk: 3.5, vMin: 24, vMax: 27 },
 ]
 
 /* ────────────────────────────────────────────────────────────────
@@ -642,15 +638,13 @@ function ClimateTab() {
           ))}
         </select>
         <p className="mt-4 font-mono text-[11px] leading-relaxed text-ink/50">
-          // Снежен товар sk е читан од официјалната МКС EN 1991-1-3
+          // Снежен товар sk и брзина на ветер vb,0 читани од референтна
           <br />
-          // снежна карта (појаси од 0.5 kN/m²) - прикажан како горна
+          // климатска карта, банднирани по локација. sk е прикажан како
           <br />
-          // граница на појасот (≤), приближно ±0.25. Брзината на ветер
+          // горна граница на појасот (≤); vb,0 како опсег на појасот
           <br />
-          // vb,0 е точна табеларна за 9 станици; за другите 11 приближно
-          <br />
-          // читана од изотахна карта - означено со „~", не табела.
+          // (3 m/s чекор). Приближни вредности за прелиминарна употреба.
         </p>
       </div>
       <div className="border border-ink bg-paper/40 p-6">
@@ -658,14 +652,8 @@ function ClimateTab() {
           <p className="font-heading text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
             Излез / Output - {d.city}
           </p>
-          <span
-            className={`font-mono shrink-0 border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] ${
-              d.vb0Source === 'table'
-                ? 'border-ink/30 bg-paper text-ink/60'
-                : 'border-orange-600 bg-orange-50 text-orange-700'
-            }`}
-          >
-            {d.vb0Source === 'table' ? 'sk: Карта · vb0: Табела' : 'sk + vb0: Карта'}
+          <span className="font-mono shrink-0 border border-ink/30 bg-paper px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-ink/60">
+            Извор: Клима карта
           </span>
         </div>
         <div className="mt-4">
@@ -683,22 +671,9 @@ function ClimateTab() {
                 Брзина на ветер v<sub>b,0</sub>
               </>
             }
-            v={
-              d.vb0 === null
-                ? 'Н/Д'
-                : d.vb0Source === 'table'
-                  ? `${d.vb0.toFixed(1)} m/s`
-                  : `~${d.vb0} m/s (од карта)`
-            }
+            v={`${d.vMin} - ${d.vMax} m/s`}
           />
         </div>
-        {d.vb0Source === 'map' && (
-          <p className="mt-4 font-mono text-[10px] leading-relaxed text-orange-700">
-            // Приближна вредност читана од картата според локацијата на
-            <br />
-            // станицата, не официјална табеларна вредност за оваа станица.
-          </p>
-        )}
       </div>
     </div>
   )
