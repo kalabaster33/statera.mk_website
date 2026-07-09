@@ -419,11 +419,14 @@ function PredimTab() {
   )
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 function MaterialTab() {
   const [area, setArea] = useState('400')
   const [floors, setFloors] = useState('5')
   const [purpose, setPurpose] = useState('residential')
   const [email, setEmail] = useState('')
+  const emailValid = EMAIL_RE.test(email)
   const result = calcMaterialEstimate(parseFloat(area), parseInt(floors, 10), purpose)
 
   const mailtoHref = `mailto:info@statera.mk?subject=${encodeURIComponent(
@@ -488,17 +491,22 @@ function MaterialTab() {
               className={inputCls}
               aria-label="Е-пошта за целосна проценка"
             />
-            <a
-              href={email.includes('@') ? mailtoHref : undefined}
-              aria-disabled={!email.includes('@')}
-              className={`font-heading shrink-0 px-5 py-2.5 text-center text-xs font-bold uppercase tracking-[0.12em] ${
-                email.includes('@')
-                  ? 'bg-accent text-white hover:bg-ink'
-                  : 'cursor-not-allowed bg-ink/20 text-ink/50'
-              }`}
-            >
-              Отклучи
-            </a>
+            {emailValid ? (
+              <a
+                href={mailtoHref}
+                className="font-heading shrink-0 bg-accent px-5 py-2.5 text-center text-xs font-bold uppercase tracking-[0.12em] text-white hover:bg-ink"
+              >
+                Отклучи
+              </a>
+            ) : (
+              <button
+                type="button"
+                disabled
+                className="font-heading shrink-0 cursor-not-allowed bg-ink/20 px-5 py-2.5 text-center text-xs font-bold uppercase tracking-[0.12em] text-ink/50"
+              >
+                Отклучи
+              </button>
+            )}
           </div>
         </div>
       </div>
