@@ -125,31 +125,43 @@ const PURPOSE_FACTORS = {
   underground_garage: { label: 'Подземно гаражно ниво', concretePerM2: 0.38, rebarPerM3: 100 },
 }
 
-// Foundation concrete supplement: burial depth is approximated as N/6 floor-
-// heights, so every 6 floors adds one buried level, each costing ~0.5 m3/m2
-// of the single-floor footprint area (not multiplied by floor count -- it's
-// a one-off substructure quantity, not a repeating per-floor one).
-const FOUNDATION_M3_PER_LEVEL = 0.5
-const FOUNDATION_FLOORS_PER_LEVEL = 6
+// Foundation concrete + foundation-specific rebar, per type. concretePerM2
+// is m3 per m2 of foundation base area (approximated here by the entered
+// per-floor gross area); rebarPerM3 is specific to the foundation type and
+// multiplies the foundation concrete volume -- NOT the general building-type
+// rebarPerM3 above, which only applies to the superstructure. Raft slabs
+// (Темелна плоча) under high-rises need much more steel than under
+// low-rises due to punching-shear reinforcement at columns/cores.
+const FOUNDATION_TYPES = {
+  raft_highrise: { label: 'Темелна плоча (Високoкатници над П+4)', concretePerM2: 0.8, rebarPerM3: 95 },
+  raft_lowrise: { label: 'Темелна плоча (Нискокатници П+1 до П+3)', concretePerM2: 0.5, rebarPerM3: 80 },
+  strip_pad: { label: 'Лентовидни темели / Стапки (Куќи, хали)', concretePerM2: 0.2, rebarPerM3: 75 },
+  blinding: { label: 'Подложен бетон (Мршав бетон)', concretePerM2: 0.1, rebarPerM3: 0 },
+}
 
-function calcMaterialEstimate(areaM2, floors, purpose) {
+function calcMaterialEstimate(areaM2, floors, purpose, foundationType) {
   const f = PURPOSE_FACTORS[purpose]
-  if (!f || !Number.isFinite(areaM2) || areaM2 <= 0 || !Number.isFinite(floors) || floors <= 0)
+  const ft = FOUNDATION_TYPES[foundationType]
+  if (!f || !ft || !Number.isFinite(areaM2) || areaM2 <= 0 || !Number.isFinite(floors) || floors <= 0)
     return null
   const totalArea = areaM2 * floors
   const superstructureConcreteM3 = totalArea * f.concretePerM2
-  const buriedLevels = Math.ceil(floors / FOUNDATION_FLOORS_PER_LEVEL)
-  const foundationConcreteM3 = areaM2 * buriedLevels * FOUNDATION_M3_PER_LEVEL
+  const foundationConcreteM3 = areaM2 * ft.concretePerM2
   const totalConcreteM3 = superstructureConcreteM3 + foundationConcreteM3
-  const rebarKg = totalConcreteM3 * f.rebarPerM3
+  const superstructureRebarKg = superstructureConcreteM3 * f.rebarPerM3
+  const foundationRebarKg = foundationConcreteM3 * ft.rebarPerM3
+  const totalRebarKg = superstructureRebarKg + foundationRebarKg
   return {
     concretePerM2: f.concretePerM2,
     rebarPerM3: f.rebarPerM3,
     superstructureConcreteM3: Math.round(superstructureConcreteM3),
-    buriedLevels,
+    foundationLabel: ft.label,
+    foundationConcretePerM2: ft.concretePerM2,
+    foundationRebarPerM3: ft.rebarPerM3,
     foundationConcreteM3: Math.round(foundationConcreteM3),
+    foundationRebarTons: (foundationRebarKg / 1000).toFixed(1),
     concreteM3: Math.round(totalConcreteM3),
-    rebarTons: (rebarKg / 1000).toFixed(1),
+    rebarTons: (totalRebarKg / 1000).toFixed(1),
     totalArea,
   }
 }
@@ -467,9 +479,10 @@ function MaterialTab() {
   const [area, setArea] = useState('400')
   const [floors, setFloors] = useState('5')
   const [purpose, setPurpose] = useState('lowrise_residential')
+  const [foundationType, setFoundationType] = useState('raft_lowrise')
   const [email, setEmail] = useState('')
   const emailValid = EMAIL_RE.test(email)
-  const result = calcMaterialEstimate(parseFloat(area), parseInt(floors, 10), purpose)
+  const result = calcMaterialEstimate(parseFloat(area), parseInt(floors, 10), purpose, foundationType)
 
   const [submitState, setSubmitState] = useState('idle') // idle | sending | sent | error
 
@@ -486,6 +499,7 @@ function MaterialTab() {
           'Бруто површина': `${area} m2/кат`,
           Катови: floors,
           Намена: PURPOSE_FACTORS[purpose].label,
+          'Тип на темел': FOUNDATION_TYPES[foundationType].label,
         }),
       })
       setSubmitState(res.ok ? 'sent' : 'error')
@@ -521,6 +535,18 @@ function MaterialTab() {
             ))}
           </select>
         </div>
+        <div>
+          <label htmlFor="ft" className={labelCls}>
+            Тип на темел
+          </label>
+          <select id="ft" value={foundationType} onChange={(e) => setFoundationType(e.target.value)} className={inputCls}>
+            {Object.entries(FOUNDATION_TYPES).map(([k, ft]) => (
+              <option key={k} value={k}>
+                {ft.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="border border-ink bg-paper/40 p-6">
         <p className="font-heading text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
@@ -537,8 +563,13 @@ function MaterialTab() {
               blurred={submitState !== 'sent'}
             />
             <OutputRow
-              k={`Темели (${result.buriedLevels} × ${FOUNDATION_M3_PER_LEVEL} m³/m²)`}
+              k={`Темели - бетон (${result.foundationLabel}, ${result.foundationConcretePerM2.toFixed(2)} m³/m²)`}
               v={`≈ ${result.foundationConcreteM3.toLocaleString('en-US')} m³`}
+              blurred={submitState !== 'sent'}
+            />
+            <OutputRow
+              k={`Темели - арматура (${result.foundationRebarPerM3} kg/m³)`}
+              v={`≈ ${result.foundationRebarTons} t`}
               blurred={submitState !== 'sent'}
             />
             <OutputRow k="Вкупно бетон" v={`≈ ${result.concreteM3.toLocaleString('en-US')} m³`} blurred={submitState !== 'sent'} />
