@@ -127,7 +127,7 @@ const GALLERY = [
   { src: '/assets/nadzor_temeli.jpg', label: 'Темелна Конструкција', tag: 'Надзор' },
   { src: '/assets/asfaltna_baza.jpg', label: 'Асфалтна База, конструкции', tag: 'Проектирање' },
   { src: '/assets/nadzor_aerial.jpg', label: 'Градилиште, воздушна контрола', tag: 'Надзор' },
-  { src: '/assets/zgrada_hrom_bw.png', label: 'Станбена Зграда, Хром', tag: 'Проектирање' },
+  { src: '/assets/zgrada_hrom_bw.jpg', label: 'Станбена Зграда, Хром', tag: 'Проектирање' },
 ]
 
 const TECH = [
