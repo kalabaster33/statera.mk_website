@@ -2,3 +2,9 @@ node_modules
 dist
 .DS_Store
 *.log
+
+# Raw source assets — originals of images/PDF already optimized into
+# public/assets/. Kept on disk for reference, not tracked in git.
+слики/
+koncept/
+ec_values/
