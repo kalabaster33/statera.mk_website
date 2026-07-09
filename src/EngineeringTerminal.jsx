@@ -513,9 +513,9 @@ function MaterialTab() {
           <div className="mt-4">
             <OutputRow k="Вкупна бруто површина" v={`${result.totalArea.toLocaleString('en-US')} m²`} />
             <OutputRow k="Бетон (норматив)" v={`${result.concretePerM2.toFixed(2)} m³/m²`} />
-            <OutputRow k="Арматура (норматив)" v={`${result.rebarPerM3} kg/m³`} blurred />
-            <OutputRow k="Вкупно бетон" v={`≈ ${result.concreteM3.toLocaleString('en-US')} m³`} blurred />
-            <OutputRow k="Вкупно арматура" v={`≈ ${result.rebarTons} t`} blurred />
+            <OutputRow k="Арматура (норматив)" v={`${result.rebarPerM3} kg/m³`} blurred={submitState !== 'sent'} />
+            <OutputRow k="Вкупно бетон" v={`≈ ${result.concreteM3.toLocaleString('en-US')} m³`} blurred={submitState !== 'sent'} />
+            <OutputRow k="Вкупно арматура" v={`≈ ${result.rebarTons} t`} blurred={submitState !== 'sent'} />
           </div>
         ) : (
           <p className="mt-4 font-mono text-sm text-ink/50">// Внесете валидна површина и катови</p>
