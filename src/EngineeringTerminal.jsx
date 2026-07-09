@@ -137,6 +137,29 @@ function calcMaterialEstimate(areaM2, floors, purpose) {
   }
 }
 
+// Tab 4: urban-planning feasibility. Deliberately has NO built-in
+// coefficient table — Кф (building coverage ratio) and Кпи (floor-area
+// ratio) limits vary by municipality and by zone within each GUP/DUP plan,
+// and there's no reliable sourced table for these. The architect already
+// has the real numbers from their site's Извод од ДУП/ГУП; this function
+// only does the derived arithmetic, never assumes a zoning value.
+function calcUrbanFeasibility(plotArea, kf, kpi, greenPct, parkingRatio) {
+  if (!Number.isFinite(plotArea) || plotArea <= 0) return null
+  if (!Number.isFinite(kf) || kf <= 0 || kf > 1) return null
+  if (!Number.isFinite(kpi) || kpi <= 0) return null
+
+  const footprint = plotArea * kf
+  const maxGFA = plotArea * kpi
+  const avgFloors = kpi / kf
+
+  const greenAreaRequired =
+    Number.isFinite(greenPct) && greenPct > 0 ? plotArea * (greenPct / 100) : null
+  const parkingSpaces =
+    Number.isFinite(parkingRatio) && parkingRatio > 0 ? Math.ceil((maxGFA / 100) * parkingRatio) : null
+
+  return { footprint, maxGFA, avgFloors, greenAreaRequired, parkingSpaces }
+}
+
 // Tab 3 climate data. TWO independent official sources, tracked separately:
 //
 // sk (snow) — read off the official МКС EN 1991-1-3 snow-load band map for
@@ -184,6 +207,7 @@ const TABS = [
   { id: 'predim', label: '01 / Предимензионирање' },
   { id: 'material', label: '02 / Проценка на Материјал' },
   { id: 'climate', label: '03 / EN 1991 Клима' },
+  { id: 'urban', label: '04 / Урбанистичка Изводливост' },
 ]
 
 const inputCls =
@@ -622,6 +646,134 @@ function ClimateTab() {
   )
 }
 
+function UrbanPlanningTab() {
+  const [plotArea, setPlotArea] = useState('500')
+  const [kf, setKf] = useState('0.4')
+  const [kpi, setKpi] = useState('1.2')
+  const [greenPct, setGreenPct] = useState('')
+  const [parkingRatio, setParkingRatio] = useState('')
+
+  const result = calcUrbanFeasibility(
+    parseFloat(plotArea),
+    parseFloat(kf),
+    parseFloat(kpi),
+    parseFloat(greenPct),
+    parseFloat(parkingRatio)
+  )
+
+  return (
+    <div className="grid gap-10 md:grid-cols-2">
+      <div className="space-y-6">
+        <div>
+          <label htmlFor="plot" className={labelCls}>
+            Плоштина на парцела (m²)
+          </label>
+          <input
+            id="plot"
+            type="number"
+            min="1"
+            step="1"
+            value={plotArea}
+            onChange={(e) => setPlotArea(e.target.value)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label htmlFor="kf" className={labelCls}>
+            Кф — коефициент на изградба (0–1)
+          </label>
+          <input
+            id="kf"
+            type="number"
+            min="0.01"
+            max="1"
+            step="0.01"
+            value={kf}
+            onChange={(e) => setKf(e.target.value)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label htmlFor="kpi" className={labelCls}>
+            Кпи — коефициент на искористеност
+          </label>
+          <input
+            id="kpi"
+            type="number"
+            min="0.01"
+            step="0.01"
+            value={kpi}
+            onChange={(e) => setKpi(e.target.value)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label htmlFor="green" className={labelCls}>
+            Барано озеленување % (опционално)
+          </label>
+          <input
+            id="green"
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            placeholder="—"
+            value={greenPct}
+            onChange={(e) => setGreenPct(e.target.value)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label htmlFor="parking" className={labelCls}>
+            Паркинг норма — места на 100m² БГП (опционално)
+          </label>
+          <input
+            id="parking"
+            type="number"
+            min="0"
+            step="0.1"
+            placeholder="—"
+            value={parkingRatio}
+            onChange={(e) => setParkingRatio(e.target.value)}
+            className={inputCls}
+          />
+        </div>
+      </div>
+      <div className="border border-ink bg-paper/40 p-6">
+        <p className="font-heading text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+          Излез / Output
+        </p>
+        {result ? (
+          <div className="mt-4">
+            <OutputRow k="Макс. фусна површина" v={`${result.footprint.toLocaleString('en-US', { maximumFractionDigits: 1 })} m²`} />
+            <OutputRow k="Макс. бруто градена површина" v={`${result.maxGFA.toLocaleString('en-US', { maximumFractionDigits: 1 })} m²`} />
+            <OutputRow k="Просечна спратност" v={`${result.avgFloors.toFixed(1)} ката`} />
+            {result.greenAreaRequired !== null && (
+              <OutputRow k="Потребна зелена површина" v={`${result.greenAreaRequired.toLocaleString('en-US', { maximumFractionDigits: 1 })} m²`} />
+            )}
+            {result.parkingSpaces !== null && (
+              <OutputRow k="Потребен паркинг" v={`${result.parkingSpaces} места`} />
+            )}
+          </div>
+        ) : (
+          <p className="mt-4 font-mono text-sm text-ink/50">
+            // Внесете плоштина {'>'}0, Кф помеѓу 0 и 1, и Кпи {'>'}0
+          </p>
+        )}
+        <p className="mt-6 border-t border-ink/15 pt-4 font-mono text-[10px] leading-relaxed text-ink/50">
+          // Кф и Кпи не се вградени во алатката — внесете ги од Вашиот
+          <br />
+          // важечки Извод од ДУП/ГУП за конкретната парцела. Паркинг
+          <br />
+          // нормата е груба проценка, не заменува проверка на локалната
+          <br />
+          // регулатива.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function EngineeringTerminal() {
   const [active, setActive] = useState('predim')
 
@@ -661,6 +813,7 @@ export default function EngineeringTerminal() {
             {active === 'predim' && <PredimTab />}
             {active === 'material' && <MaterialTab />}
             {active === 'climate' && <ClimateTab />}
+            {active === 'urban' && <UrbanPlanningTab />}
             <Disclaimer />
           </div>
         </div>
