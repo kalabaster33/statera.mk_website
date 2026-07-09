@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: '#portfolio', label: 'Портфолио' },
   { href: '#proekti', label: 'Реализации' },
   { href: '#tehnologija', label: 'Технологија' },
+  { href: '#faq', label: 'Прашања' },
   { href: '#kontakt', label: 'Контакт' },
 ]
 
@@ -146,6 +147,29 @@ const TECH = [
 ]
 
 const TECH_STACK = ['Autodesk Revit', 'Tekla Structures', 'ArchiCAD', 'AutoCAD', 'SAP2000', 'Tower']
+
+const FAQ = [
+  {
+    q: 'Дали работите директно со архитекти или треба прво да имаме готов архитектонски проект?',
+    a: 'Статера Инженеринг работи и на комплетни проекти (Основен и Главен Проект — архитектура, статика и инсталации под еден тим), и на самостојна изработка на статика доколку веќе имате готово архитектонско решение.',
+  },
+  {
+    q: 'Кои стандарди ги применувате при проектирањето?',
+    a: 'Сите проекти се изработуваат согласно важечките Еврокодови (EN 1992, EN 1993, EN 1994, сеизмичка анализа според EN 1998), со користење на SAP2000, Tower, Tekla Structures и Autodesk Revit.',
+  },
+  {
+    q: 'Дали вршите стручен надзор и на проекти изработени од друго биро?',
+    a: 'Да — стручниот надзор е независна услуга, без разлика дали основниот проект е изработен од нас или од друг проектант.',
+  },
+  {
+    q: 'Што е „Инженерски терминал" и дали пресметките се официјални?',
+    a: 'Тоа е бесплатна алатка на нашата страница за брзи, прелиминарни пресметки — предимензионирање, проценка на материјал и климатски податоци. Резултатите се исклучиво ориентациони и не ја заменуваат официјалната, потпишана статичка пресметка.',
+  },
+  {
+    q: 'Каде се наоѓате и како можам да ве контактирам?',
+    a: 'Канцеларијата е на бул. Јане Сандански 50/3-6, Скопје. Контакт: info@statera.mk или 078 264 4122.',
+  },
+]
 
 function SectionTitle({ kicker, title }) {
   return (
@@ -522,6 +546,26 @@ export default function App() {
         </div>
       </section>
 
+      {/* ── FAQ ────────────────────────────────────────────────── */}
+      <section id="faq" className="border-y border-ink/10 bg-card">
+        <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+          <SectionTitle kicker="Прашања" title="Најчесто поставувани прашања" />
+          <div className="divide-y divide-ink/10 border border-ink/10 bg-paper/40">
+            {FAQ.map((item) => (
+              <details key={item.q} className="group p-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-heading text-base font-bold text-ink marker:content-none">
+                  {item.q}
+                  <span className="shrink-0 text-xl leading-none text-accent transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-4 text-sm leading-relaxed text-ink/70">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Contact / Footer ───────────────────────────────────── */}
       <footer id="kontakt" className="border-t border-ink/10 bg-ink text-white">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-20">
@@ -532,12 +576,20 @@ export default function App() {
                 Секој проект поминува низ ист процес: концепт, статичка верификација, изведба.
                 Контактирајте нè за проектирање, надзор или ревизија на постоечки проект.
               </p>
-              <a
-                href="mailto:info@statera.mk"
-                className="font-heading mt-8 inline-block bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-ink hover:bg-sky-400 hover:text-white"
-              >
-                info@statera.mk
-              </a>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <a
+                  href="mailto:info@statera.mk"
+                  className="font-heading inline-block bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-ink hover:bg-sky-400 hover:text-white"
+                >
+                  info@statera.mk
+                </a>
+                <a
+                  href="tel:+38978264122"
+                  className="font-heading inline-block border border-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white hover:border-sky-400 hover:text-sky-400"
+                >
+                  078 264 4122
+                </a>
+              </div>
             </div>
             <div className="flex flex-col justify-between gap-8 md:items-end">
               <div className="flex items-center gap-3">
@@ -546,7 +598,8 @@ export default function App() {
                 </span>
               </div>
               <div className="font-heading text-xs uppercase tracking-[0.15em] text-white/50 md:text-right">
-                <p>Скопје, Република Македонија</p>
+                <p>бул. Јане Сандански 50/3-6</p>
+                <p className="mt-1">Скопје, Република Македонија</p>
                 <p className="mt-2">Интегрирано Проектирање · Статика · Стручен Надзор</p>
               </div>
             </div>
