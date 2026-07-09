@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://statera.mk/sitemap.xml
+# LLM/AI-assistant context file: https://statera.mk/llms.txt

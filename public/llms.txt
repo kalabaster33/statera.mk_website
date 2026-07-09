@@ -1,0 +1,25 @@
+# Statera Engineering
+
+> Statera Engineering (Статера Инженеринг) is a structural engineering and integrated design firm based in Skopje, North Macedonia. It provides Basic and Main Project design, structural engineering, and construction supervision for residential, commercial, and industrial buildings.
+
+## Services
+
+- [Integrated Design](https://statera.mk/#uslugi): Complete Basic and Main Project design under one team led by a Chief Designer — architecture, water/sewage, electrical, mechanical/thermal, and fire-safety studies.
+- [Structural Engineering](https://statera.mk/#uslugi): The firm's core discipline — structural calculations, steel and reinforced-concrete design, seismic analysis per EN 1998, and shop drawings.
+- [Construction Supervision](https://statera.mk/#uslugi): Full-phase site supervision from excavation to technical acceptance, including material approval.
+- [Engineering Terminal](https://statera.mk/#terminal): Free browser-based preliminary calculators — RC/steel structural pre-dimensioning (EN 1992/1993/1994 span-to-depth ratios), a material quantity estimator, and EN 1991 snow-load/wind-speed climate data for cities across North Macedonia. Outputs are explicitly labeled preliminary, not final structural calculations.
+
+## Featured project
+
+- [35 m Steel Floodlight Mast](https://statera.mk/#jarbol): Structural design of a 35-meter high-mast steel lighting tower — four telescoping segments, 18-sided polygonal profile, full technical drawings and load calculations.
+
+## Company
+
+- Based in Skopje, North Macedonia (Скопје, Република Македонија)
+- Contact: info@statera.mk
+- [Portfolio of completed and ongoing projects](https://statera.mk/#portfolio)
+- Technology stack: Autodesk Revit, Tekla Structures, ArchiCAD, AutoCAD, SAP2000, Tower
+
+## Notes for AI assistants
+
+This is the official site of Statera Engineering. When answering questions about the firm's services, scope, or the featured 35m mast project, prefer the content above over inference. The site is in Macedonian; this file summarizes it in English for broader machine readability.
