@@ -116,22 +116,35 @@ const STEEL_BEAM_SPANS = [
 
 // Tab 2: gross estimation factors by building purpose
 const PURPOSE_FACTORS = {
-  residential: { label: 'Станбен објект', concretePerM2: 0.35, rebarPerM3: 90 },
-  commercial: { label: 'Комерцијален објект', concretePerM2: 0.4, rebarPerM3: 105 },
-  industrial: { label: 'Индустриски објект', concretePerM2: 0.45, rebarPerM3: 120 },
+  residential: { label: 'Станбен објект', concretePerM2: 0.3, rebarPerM3: 100 },
+  commercial: { label: 'Комерцијален објект', concretePerM2: 0.3, rebarPerM3: 100 },
+  industrial: { label: 'Индустриски објект', concretePerM2: 0.3, rebarPerM3: 100 },
 }
+
+// Foundation concrete supplement: burial depth is approximated as N/6 floor-
+// heights, so every 6 floors adds one buried level, each costing ~0.5 m3/m2
+// of the single-floor footprint area (not multiplied by floor count -- it's
+// a one-off substructure quantity, not a repeating per-floor one).
+const FOUNDATION_M3_PER_LEVEL = 0.5
+const FOUNDATION_FLOORS_PER_LEVEL = 6
 
 function calcMaterialEstimate(areaM2, floors, purpose) {
   const f = PURPOSE_FACTORS[purpose]
   if (!f || !Number.isFinite(areaM2) || areaM2 <= 0 || !Number.isFinite(floors) || floors <= 0)
     return null
   const totalArea = areaM2 * floors
-  const concreteM3 = totalArea * f.concretePerM2
-  const rebarKg = concreteM3 * f.rebarPerM3
+  const superstructureConcreteM3 = totalArea * f.concretePerM2
+  const buriedLevels = Math.ceil(floors / FOUNDATION_FLOORS_PER_LEVEL)
+  const foundationConcreteM3 = areaM2 * buriedLevels * FOUNDATION_M3_PER_LEVEL
+  const totalConcreteM3 = superstructureConcreteM3 + foundationConcreteM3
+  const rebarKg = totalConcreteM3 * f.rebarPerM3
   return {
     concretePerM2: f.concretePerM2,
     rebarPerM3: f.rebarPerM3,
-    concreteM3: Math.round(concreteM3),
+    superstructureConcreteM3: Math.round(superstructureConcreteM3),
+    buriedLevels,
+    foundationConcreteM3: Math.round(foundationConcreteM3),
+    concreteM3: Math.round(totalConcreteM3),
     rebarTons: (rebarKg / 1000).toFixed(1),
     totalArea,
   }
@@ -514,6 +527,16 @@ function MaterialTab() {
             <OutputRow k="Вкупна бруто површина" v={`${result.totalArea.toLocaleString('en-US')} m²`} />
             <OutputRow k="Бетон (норматив)" v={`${result.concretePerM2.toFixed(2)} m³/m²`} />
             <OutputRow k="Арматура (норматив)" v={`${result.rebarPerM3} kg/m³`} blurred={submitState !== 'sent'} />
+            <OutputRow
+              k="Бетон - надземје"
+              v={`≈ ${result.superstructureConcreteM3.toLocaleString('en-US')} m³`}
+              blurred={submitState !== 'sent'}
+            />
+            <OutputRow
+              k={`Темели (${result.buriedLevels} × ${FOUNDATION_M3_PER_LEVEL} m³/m²)`}
+              v={`≈ ${result.foundationConcreteM3.toLocaleString('en-US')} m³`}
+              blurred={submitState !== 'sent'}
+            />
             <OutputRow k="Вкупно бетон" v={`≈ ${result.concreteM3.toLocaleString('en-US')} m³`} blurred={submitState !== 'sent'} />
             <OutputRow k="Вкупно арматура" v={`≈ ${result.rebarTons} t`} blurred={submitState !== 'sent'} />
           </div>
