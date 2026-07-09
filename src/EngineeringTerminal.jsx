@@ -114,11 +114,15 @@ const STEEL_BEAM_SPANS = [
   { label: 'Примарни главни греди - монолитна/префабрикувана плоча', range: '6 до 8 m' },
 ]
 
-// Tab 2: gross estimation factors by building purpose
+// Tab 2: gross estimation factors by building type/level. concretePerM2 is
+// the "Препорачано за алатката" (recommended) value from each type's
+// Мин.-Макс. m3/m2 range; rebarPerM3 stays flat at 100 kg/m3 across types
+// (no differentiated rebar table given).
 const PURPOSE_FACTORS = {
-  residential: { label: 'Станбен објект', concretePerM2: 0.3, rebarPerM3: 100 },
-  commercial: { label: 'Комерцијален објект', concretePerM2: 0.3, rebarPerM3: 100 },
-  industrial: { label: 'Индустриски објект', concretePerM2: 0.3, rebarPerM3: 100 },
+  lowrise_residential: { label: 'Станбена нискокатница (до П+3)', concretePerM2: 0.32, rebarPerM3: 100 },
+  highrise_residential: { label: 'Станбена високoкатница', concretePerM2: 0.37, rebarPerM3: 100 },
+  business: { label: 'Деловен објект (поголеми распони)', concretePerM2: 0.4, rebarPerM3: 100 },
+  underground_garage: { label: 'Подземно гаражно ниво', concretePerM2: 0.38, rebarPerM3: 100 },
 }
 
 // Foundation concrete supplement: burial depth is approximated as N/6 floor-
@@ -462,7 +466,7 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xzdllory'
 function MaterialTab() {
   const [area, setArea] = useState('400')
   const [floors, setFloors] = useState('5')
-  const [purpose, setPurpose] = useState('residential')
+  const [purpose, setPurpose] = useState('lowrise_residential')
   const [email, setEmail] = useState('')
   const emailValid = EMAIL_RE.test(email)
   const result = calcMaterialEstimate(parseFloat(area), parseInt(floors, 10), purpose)
@@ -507,7 +511,7 @@ function MaterialTab() {
         </div>
         <div>
           <label htmlFor="pu" className={labelCls}>
-            Намена на објектот
+            Тип на објект / ниво
           </label>
           <select id="pu" value={purpose} onChange={(e) => setPurpose(e.target.value)} className={inputCls}>
             {Object.entries(PURPOSE_FACTORS).map(([k, f]) => (
