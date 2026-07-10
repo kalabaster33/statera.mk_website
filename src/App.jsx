@@ -2,6 +2,7 @@ import { useState } from 'react'
 import EngineeringTerminal from './EngineeringTerminal'
 
 const NAV_LINKS = [
+  { href: '#za-nas', label: 'За Нас' },
   { href: '#uslugi', label: 'Услуги' },
   { href: '#terminal', label: 'Терминал' },
   { href: '#jarbol', label: 'Истакнат Проект' },
@@ -15,52 +16,43 @@ const NAV_LINKS = [
 const SERVICES = [
   {
     module: 'Модул 01',
-    title: 'Интегрирано Проектирање',
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01" />
-      </svg>
-    ),
-    text: 'Комплетна изработка на Основен и Главен Проект. Еден договор, еден одговорен тим - Главен Проектант кој ги координира сите фази.',
-    items: [
-      'Архитектонско проектирање',
-      'Водовод и канализација',
-      'Електрични инсталации',
-      'Машинство и термотехника',
-      'ППЗ елаборати',
-    ],
-  },
-  {
-    module: 'Модул 02',
-    title: 'Структурно Инженерство',
+    title: 'Конструктивна Анализа и Статика',
     icon: (
       <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M3 21l6-6M3 21v-4m0 4h4M14 4l6 6M9 9l10.5 10.5M4 4l5 5M14 4l-2 2 6 6 2-2-6-6zM4 4l2-2 3 3-2 2-3-3z" />
       </svg>
     ),
-    text: 'Нашето јадро и примарна експертиза. Оптимизирани конструкции кои штедат материјал и време, совршено усогласени со архитектонската идеја.',
-    items: [
-      'Специјализирани статички пресметки',
-      'Челични и АБ конструкции',
-      'Сеизмичка анализа (EN 1998)',
-      'Детални работилнички цртежи',
-    ],
+    text: 'Комплетна статичка и динамичка анализа за челични, армирано-бетонски и спрегнати конструкции. Специјализирани за деталирање во зони со висок сеизмички ризик, пресметка на оптоварување од ветер и комплексни просторни геометрии.',
+  },
+  {
+    module: 'Модул 02',
+    title: 'BIM Моделирање и Деталирање',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zM3 7l9 5 9-5M12 12v10" />
+      </svg>
+    ),
+    text: '3D конструктивно моделирање со висок LOD (Level of Development). Ги елиминираме проблемите на терен преку дигитално решавање на сите просторни колизии пред да се излее еден кубик бетон или да се пресече челичен профил.',
   },
   {
     module: 'Модул 03',
-    title: 'Комплексен Надзор',
+    title: 'Оптимизација на Материјали и Предмер-Пресметки',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M9 3h6v4H9zM9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4M9 12l2 2 4-4" />
+      </svg>
+    ),
+    text: 'Прецизно вадење на предмер и пресметка директно од конструктивниот модел. Го елиминираме непотребниот постојан товар и загубата на материјал, обезбедувајќи им на инвеститорите точна тонажа на челик и волумен на бетон за да се спречат непланирани трошоци.',
+  },
+  {
+    module: 'Модул 04',
+    title: 'Надзор на Изведба',
     icon: (
       <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M4 18h16M4 18v-4a8 8 0 0 1 16 0v4M12 6V4m0 14v3M2 21h20" />
       </svg>
     ),
-    text: 'Бескомпромисна контрола на градилиште, од првиот ископ до технички прием. Штитиме и квалитет и инвестиција.',
-    items: [
-      'Главен надзор на објект',
-      'Контрола на сите фази на изведба',
-      'Одобрување на материјали',
-      'Технички прием',
-    ],
+    text: 'Ригорозна теренска контрола на арматура, бетонирање и челични врски, за да се осигура строга усогласеност со основниот проект и техничките спецификации.',
   },
 ]
 
@@ -268,10 +260,10 @@ export default function App() {
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href="mailto:info@statera.mk?subject=Барање за структурна проценка на архитектонски план"
+                href="mailto:info@statera.mk?subject=Барање за конструктивна проценка на архитектонска основа"
                 className="font-heading bg-accent px-6 py-3 text-sm font-semibold uppercase tracking-[0.1em] text-white hover:bg-ink"
               >
-                Поднесете план за структурна проценка
+                Испратете Архитектонска Основа за Конструктивна Проценка
               </a>
               <a
                 href="#uslugi"
@@ -292,6 +284,31 @@ export default function App() {
               <span>Fig. 01</span>
             </figcaption>
           </figure>
+        </div>
+      </section>
+
+      {/* ── About / Brand tone ────────────────────────────────── */}
+      <section id="za-nas" className="border-b border-ink/10 bg-card">
+        <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
+          <SectionTitle kicker="За Нас" title="Инженерство базирано на Реалноста." />
+          <p className="max-w-3xl text-base leading-relaxed text-ink/75">
+            Статера оперира врз основа на строги математички принципи и апсолутна усогласеност со
+            стандардите. Не правиме компромиси со безбедноста и статиката. Користејќи
+            високопрецизна анализа на конечни елементи (FEA) и Building Information Modeling
+            (BIM), испорачуваме статички пресметки кои директно се преточуваат во изведба без
+            грешки на терен. Проектираме за максимална сеизмичка отпорност и оптимална набавка на
+            материјали, осигурувајќи дека секој проект е економски исплатив и конструктивно
+            беспрекорен.
+          </p>
+          <div className="mt-8 border-l-2 border-accent bg-paper/40 px-6 py-4">
+            <p className="font-heading text-[10px] font-bold uppercase tracking-[0.2em] text-ink/60">
+              Технологија
+            </p>
+            <p className="mt-2 font-mono text-sm leading-relaxed text-ink/80">
+              Моделирано и анализирано со користење на Tekla Structures, Revit, SAP2000, IDEA
+              StatiCa и Radimpex Tower.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -335,8 +352,8 @@ export default function App() {
       {/* ── Services ───────────────────────────────────────────── */}
       <section id="uslugi" className="border-y border-ink/10 bg-card">
         <div className="mx-auto max-w-6xl px-4 py-16 md:px-6 md:py-24">
-          <SectionTitle kicker="Модули на услуги" title="Комплетен инженеринг, три модули" />
-          <div className="grid gap-6 md:grid-cols-3">
+          <SectionTitle kicker="Модули на услуги" title="Комплетен инженеринг, четири модули" />
+          <div className="grid gap-6 md:grid-cols-2">
             {SERVICES.map((s) => (
               <article key={s.title} className="flex flex-col border border-ink/10 border-t-2 border-t-accent bg-paper/40 p-8">
                 <div className="flex items-start justify-between">
@@ -347,14 +364,6 @@ export default function App() {
                 </div>
                 <h3 className="font-heading mt-6 text-lg font-bold text-ink">{s.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-ink/70">{s.text}</p>
-                <ul className="mt-6 space-y-2 border-t border-ink/10 pt-5 text-sm text-ink/80">
-                  {s.items.map((t) => (
-                    <li key={t} className="flex gap-3">
-                      <span className="mt-[7px] h-[6px] w-[6px] shrink-0 bg-accent" />
-                      {t}
-                    </li>
-                  ))}
-                </ul>
               </article>
             ))}
           </div>
